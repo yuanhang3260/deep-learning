@@ -7,10 +7,10 @@ class Model:
         raise NotImplementedError()
 
 
-def softmax(x):
-    x_exp = tf.exp(x)
-    partition = tf.reduce_sum(x_exp, axis=1, keepdims=True)
-    return x_exp / partition
+def softmax(o):
+    o_exp = tf.exp(o)
+    partition = tf.reduce_sum(o_exp, axis=1, keepdims=True)
+    return o_exp / partition
 
 
 def cross_entropy(y, y_hat):
