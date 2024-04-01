@@ -83,7 +83,8 @@ def main():
     loss = models.cross_entropy
 
     # Start training.
-    optimizer = training.Optimizer(lr=0.1)
+    optimizer = training.Optimizer(learning_rate=0.1)
+    # optimizer = tf.keras.optimizers.SGD(learning_rate=0.1)
     epochs, losses, train_accs, test_accs = [], [], [], []
     for epoch in range(10):
         loss_mean, train_acc = train_epoch(train_dataset, model, loss, optimizer)
