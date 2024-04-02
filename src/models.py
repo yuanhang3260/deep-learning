@@ -7,6 +7,10 @@ class Model:
         raise NotImplementedError()
 
 
+def relu(x):
+    return tf.math.maximum(x, 0)
+
+
 def softmax(o):
     o_exp = tf.exp(o)
     partition = tf.reduce_sum(o_exp, axis=1, keepdims=True)
@@ -14,8 +18,6 @@ def softmax(o):
 
 
 def cross_entropy(y, y_hat):
-    loss = -tf.math.log(
-        tf.boolean_mask(y_hat, tf.one_hot(y, depth=y_hat.shape[-1]))
-    )
-    return tf.reduce_sum(loss) / loss.shape[0]
+    return -tf.math.log(
+        tf.boolean_mask(y_hat, tf.one_hot(y, depth=y_hat.shape[-1])))
 
