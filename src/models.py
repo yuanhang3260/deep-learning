@@ -8,7 +8,8 @@ class Model:
 
 
 def relu(x):
-    return tf.math.maximum(x, 0)
+    #return tf.math.maximum(x, 0)
+    return tf.nn.relu(x, 0)
 
 
 def softmax(o):

@@ -70,7 +70,7 @@ def train_epoch(dataset, model, loss, optimizer):
         optimizer.apply_gradients(zip(grads, params))
 
         # print("training loss %f, acc: %f" % (float(loss_mean), accuracy(y_hat, y)))
-        metric.add(tf.reduce_mean(train_loss), accuracy(y_hat, y), 1)
+        metric.add(train_loss, accuracy(y_hat, y), 1)
 
     return metric[0] / metric[2], metric[1] / metric[2]
 
@@ -101,6 +101,11 @@ def main():
     # Define model.
     #model = MnistSimpleModel(input_dim=28 * 28, output_dim=10)
     model = MnistMlpModel(input_dim=28 * 28, output_dim=10, hidden_dim=256)
+    # model = tf.keras.models.Sequential([
+    #     tf.keras.layers.Flatten(),
+    #     tf.keras.layers.Dense(256, activation='relu'),
+    #     tf.keras.layers.Dense(10)]
+    # )
 
     # Define loss function.
     #loss = models.cross_entropy
