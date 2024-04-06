@@ -23,27 +23,9 @@ class MnistSimpleModel(models.Model):
     def trainable_variables(self):
         return [self.w, self.b]
 
-
-class MnistMlpModel(models.Model):
-    def __init__(self, input_dim, output_dim, hidden_dim):
-        self.w1 = tf.Variable(
-            tf.random.normal(shape=(input_dim, hidden_dim), mean=0, stddev=0.01)
-        )
-        self.b1 = tf.Variable(tf.zeros(hidden_dim))
-        self.w2 = tf.Variable(
-            tf.random.normal(shape=(hidden_dim, output_dim), mean=0, stddev=0.01)
-        )
-        self.b2 = tf.Variable(tf.zeros(output_dim))
-
-    def __call__(self, x):
-        x = tf.reshape(x, (-1, self.w1.shape[0]))
-        h = models.relu(tf.matmul(x, self.w1) + self.b1)
-        # Note softmax is moved to cross entropy loss.
-        return tf.matmul(h, self.w2) + self.b2
-
     @property
-    def trainable_variables(self):
-        return [self.w1, self.b1, self.w2, self.b2]
+    def losses(self):
+        return []
 
 
 # convert image pixel data from unit8 to float(0~1), and label to int32.
@@ -63,7 +45,7 @@ def train_epoch(dataset, model, loss, optimizer):
     for x, y in dataset:
         with tf.GradientTape() as tape:
             y_hat = model(x)
-            train_loss = tf.reduce_mean(loss(y, y_hat))
+            train_loss = tf.reduce_mean(loss(y, y_hat)) + tf.reduce_sum(model.losses)
 
         params = model.trainable_variables
         grads = tape.gradient(train_loss, params)
@@ -99,22 +81,13 @@ def main():
                                     is_train=True)
 
     # Define model.
-    #model = MnistSimpleModel(input_dim=28 * 28, output_dim=10)
-    model = MnistMlpModel(input_dim=28 * 28, output_dim=10, hidden_dim=256)
-    # model = tf.keras.models.Sequential([
-    #     tf.keras.layers.Flatten(),
-    #     tf.keras.layers.Dense(256, activation='relu'),
-    #     tf.keras.layers.Dense(10)]
-    # )
+    model = MnistSimpleModel(input_dim=28 * 28, output_dim=10)
 
     # Define loss function.
-    #loss = models.cross_entropy
-    #loss = lambda y, y_hat: tf.losses.sparse_categorical_crossentropy(y, y_hat, from_logits=True)
-    loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
+    loss = models.cross_entropy
 
     # Define optimizer.
     optimizer = training.Optimizer(learning_rate=0.1)
-    #optimizer = tf.keras.optimizers.SGD(learning_rate=0.1)
 
     # Start training.
     epochs, losses, train_accs, test_accs = [], [], [], []
