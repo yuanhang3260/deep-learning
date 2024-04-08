@@ -77,7 +77,7 @@ def main():
     train_images, train_labels = preprocess_data(*mnist_train)
     test_images, test_labels = preprocess_data(*mnist_test)
     train_dataset = ds.load_dataset((train_images, train_labels),
-                                    batch_size=1000,
+                                    batch_size=128,
                                     is_train=True)
 
     # Define model.
@@ -91,7 +91,7 @@ def main():
 
     # Start training.
     epochs, losses, train_accs, test_accs = [], [], [], []
-    for epoch in range(10):
+    for epoch in range(15):
         loss_mean, train_acc = train_epoch(train_dataset, model, loss, optimizer)
         test_acc = accuracy(model(test_images), test_labels)
         print("epoch %d, training loss %f, train acc %f, test acc %f" %
