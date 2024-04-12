@@ -30,6 +30,8 @@ def main():
     model.add(tf.keras.layers.Dropout(0.5))
     model.add(tf.keras.layers.Dense(10))
 
+    model.summary()
+
     # Define loss function.
     loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
 
