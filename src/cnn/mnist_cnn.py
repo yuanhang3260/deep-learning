@@ -1,11 +1,12 @@
 # coding=utf-8
 import tensorflow as tf
-import mnist_base
-import datasets as ds
-import mnist_images
 import numpy as np
 import tensorflow.keras as keras
 from tensorflow.keras import layers
+
+import datasets as ds
+
+from mnist import mnist_base, mnist_images
 
 
 def main():

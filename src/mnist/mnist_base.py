@@ -1,11 +1,11 @@
 # coding=utf-8
 import tensorflow as tf
-import mnist_images
+import matplotlib.pyplot as plt
+
 import base
 import datasets as ds
 import models
 import training
-import matplotlib.pyplot as plt
 
 
 class MnistSimpleModel(models.Model):

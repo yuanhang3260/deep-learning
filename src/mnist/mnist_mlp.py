@@ -1,9 +1,10 @@
 # coding=utf-8
 import tensorflow as tf
-import mnist_base
+
 import datasets as ds
-import mnist_images
 import models
+
+from mnist import mnist_base
 
 
 class MnistMlpModel(models.Model):
