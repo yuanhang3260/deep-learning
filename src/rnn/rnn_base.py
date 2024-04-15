@@ -11,11 +11,6 @@ class RnnModelScratch:
         self.num_hiddens = num_hiddens
         self.trainable_variables = self.create_params()
 
-    def __call__(self, x, state):
-        x = tf.one_hot(tf.transpose(x), self.vocab_size)
-        x = tf.cast(x, tf.float32)
-        return self.rnn(x, state)
-
     def create_params(self):
         num_inputs = num_outputs = self.vocab_size
 
@@ -37,6 +32,11 @@ class RnnModelScratch:
 
     def init_state(self, batch_size):
         return (tf.zeros((batch_size, self.num_hiddens)),)
+
+    def __call__(self, x, state):
+        x = tf.one_hot(tf.transpose(x), self.vocab_size)
+        x = tf.cast(x, tf.float32)
+        return self.rnn(x, state)
 
     def rnn(self, inputs, state):
         # inputs shape (window_steps, batch_size，vocab_size)

@@ -17,14 +17,14 @@ class RnnModelSimple(tf.keras.layers.Layer):
 
     def call(self, inputs, *args, **kwargs):
         state = args[0]
-        X = tf.one_hot(tf.transpose(inputs), self.vocab_size)
-        # rnn返回两个以上的值
-        Y, *state = self.rnn(X, state)
-        output = self.dense(tf.reshape(Y, (-1, Y.shape[-1])))
+        x = tf.one_hot(tf.transpose(inputs), self.vocab_size)
+        y, *state = self.rnn(x, state)
+        output = self.dense(tf.reshape(y, (-1, y.shape[-1])))
         return output, state
 
     def begin_state(self, *args, **kwargs):
         return self.rnn.cell.get_initial_state(*args, **kwargs)
+
 
 def main():
     # Load text data and vocab.
@@ -35,8 +35,7 @@ def main():
     # Create model.
     num_hiddens = 512
     model = RnnModelSimple(num_hiddens, len(vocab))
-
-    # print(predict(prefix='time traveller ', num_preds=10, model=model, vocab=vocab))
+    #print(rnn_base.predict(prefix='time traveller ', num_preds=10, model=model, vocab=vocab))
 
     # Define loss.
     loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
@@ -56,7 +55,6 @@ def main():
 
         epochs.append(epoch)
         losses.append(loss_mean)
-
     print('# Training finished.')
 
     print(rnn_base.predict(prefix='time traveller', num_preds=50, model=model, vocab=vocab))
