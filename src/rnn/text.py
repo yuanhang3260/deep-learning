@@ -87,12 +87,12 @@ def load_corpus_time_machine(max_tokens=-1):
 
 
 class SeqDataLoader:
-    def __init__(self, batch_size, num_steps, use_random_iter, max_tokens):
+    def __init__(self, batch_size, num_steps, use_random_iter=False, max_tokens=-1):
         if use_random_iter:
             self.data_iter_fn = self.seq_data_iter_random
         else:
             self.data_iter_fn = self.seq_data_iter_sequential
-        self.corpus, selfcab = load_corpus_time_machine(max_tokens)
+        self.corpus, self.vocab = load_corpus_time_machine(max_tokens)
         self.batch_size, self.num_steps = batch_size, num_steps
 
     def __iter__(self):
@@ -132,7 +132,7 @@ def main():
     data_iter = SeqDataLoader(batch_size=2, num_steps=5, use_random_iter=False, max_tokens=1000)
     print(f'vocab size {len(data_iter.vocab)}, corpus size {len(data_iter.corpus)}')
     #for x, y in data_iter:
-    #    print(f'x: {x}, y: {y}')
+    #   print(f'x: {x}, y: {y}')
 
 
 

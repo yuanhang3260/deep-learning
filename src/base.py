@@ -1,8 +1,8 @@
-import tensorflow as tf
+import matplotlib.pyplot as plt
 
-class Recorder:
-    def __init__(self, n):
-        self.data = [0.0] * n
+class Accumulator:
+    def __init__(self, size):
+        self.data = [0.0] * size
 
     def add(self, *args):
         self.data = [a + float(b) for a, b in zip(self.data, args)]
@@ -12,3 +12,16 @@ class Recorder:
 
     def __getitem__(self, idx):
         return self.data[idx]
+
+
+def plot_metrics(epochs, metrics, legends):
+    fig, ax = plt.subplots()
+
+    ax.set_xlabel('epoch')
+    for y, legend in zip(metrics, legends):
+        ax.plot(epochs, y, marker='.', label=legend)
+    ax.legend()
+
+    plt.grid()
+    plt.show()
+

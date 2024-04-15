@@ -5,6 +5,7 @@ import datasets as ds
 import models
 
 from mnist import mnist_base
+from mnist import mnist_images
 
 
 class MnistMlpModel(models.Model):

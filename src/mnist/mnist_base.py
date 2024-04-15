@@ -1,11 +1,12 @@
 # coding=utf-8
 import tensorflow as tf
-import matplotlib.pyplot as plt
 
 import base
 import datasets as ds
 import models
 import training
+
+from mnist import mnist_images
 
 
 class MnistSimpleModel(models.Model):
@@ -41,7 +42,7 @@ def accuracy(y_hat, y):
 
 
 def train_epoch(dataset, model, loss, optimizer):
-    metric = base.Recorder(3)
+    metric = base.Accumulator(size=3)
     for x, y in dataset:
         with tf.GradientTape() as tape:
             y_hat = model(x)
@@ -55,20 +56,6 @@ def train_epoch(dataset, model, loss, optimizer):
         metric.add(train_loss, accuracy(y_hat, y), 1)
 
     return metric[0] / metric[2], metric[1] / metric[2]
-
-
-def plot_metric(epochs, losses, train_accs, test_accs):
-    fig, ax = plt.subplots()
-    # ax.set_ylim([0.2, 2])
-
-    ax.plot(epochs, losses, marker='o', label='loss')
-    ax.plot(epochs, train_accs, marker='o', label='train accurary')
-    ax.plot(epochs, test_accs, marker='o', label='test accurary')
-    ax.set_xlabel('epoch')
-    ax.legend()
-
-    plt.grid()
-    plt.show()
 
 
 def main():
@@ -102,7 +89,8 @@ def main():
         train_accs.append(train_acc)
         test_accs.append(test_acc)
 
-    plot_metric(epochs, losses, train_accs, test_accs)
+    base.plot_metrics(epochs, metrics=[losses, train_accs, test_accs],
+                      legends=['loss', 'train acc', 'test acc'])
 
 
 if __name__ == "__main__":
