@@ -12,44 +12,57 @@ class RnnModelScratch:
         self.trainable_variables = self.create_params()
 
     def create_params(self):
-        num_inputs = num_outputs = self.vocab_size
+        input_dim = output_dim = self.vocab_size
 
         def normal(shape):
             return tf.random.normal(shape=shape, stddev=0.01, mean=0, dtype=tf.float32)
 
-        # hidden layer
-        w_xh = tf.Variable(normal((num_inputs, self.num_hiddens)), dtype=tf.float32)
-        w_hh = tf.Variable(normal((self.num_hiddens, self.num_hiddens)), dtype=tf.float32)
-        b_h = tf.Variable(tf.zeros(self.num_hiddens), dtype=tf.float32)
-        # output layer
-        w_hq = tf.Variable(normal((self.num_hiddens, num_outputs)), dtype=tf.float32)
-        b_q = tf.Variable(tf.zeros(num_outputs), dtype=tf.float32)
+        def three():
+            return (tf.Variable(normal((input_dim, self.num_hiddens)), dtype=tf.float32),
+                    tf.Variable(normal((self.num_hiddens, self.num_hiddens)), dtype=tf.float32),
+                    tf.Variable(tf.zeros(self.num_hiddens), dtype=tf.float32))
 
-        return [w_xh, w_hh, b_h, w_hq, b_q]
+        # reset gate
+        w_xr, w_hr, b_r = three()
+
+        # update gate
+        w_xz, w_hz, b_z = three()
+
+        # hidden state
+        w_xh, w_hh, b_h = three()
+
+        # output layer
+        w_hq = tf.Variable(normal((self.num_hiddens, output_dim)), dtype=tf.float32)
+        b_q = tf.Variable(tf.zeros(output_dim), dtype=tf.float32)
+
+        return [w_xr, w_hr, b_r, w_xz, w_hz, b_z, w_xh, w_hh, b_h, w_hq, b_q]
 
     def begin_state(self, batch_size, *args, **kwargs):
-        return self.init_state(batch_size)
-
-    def init_state(self, batch_size):
         return (tf.zeros((batch_size, self.num_hiddens)),)
 
     def __call__(self, x, state):
-        x = tf.one_hot(tf.transpose(x), self.vocab_size)
-        x = tf.cast(x, tf.float32)
-        return self.rnn(x, state)
+        w_xr, w_hr, b_r, w_xz, w_hz, b_z, w_xh, w_hh, b_h, w_hq, b_q = self.trainable_variables
 
-    def rnn(self, inputs, state):
-        # inputs shape (window_steps, batch_size，vocab_size)
-        w_xh, w_hh, b_h, w_hq, b_q = self.trainable_variables
+        x = tf.one_hot(tf.transpose(x), self.vocab_size)
+        h, state = self.rnn_cell(tf.cast(x, tf.float32),
+                                 state,
+                                 w_xr, w_hr, b_r, w_xz, w_hz, b_z, w_xh, w_hh, b_h)
+        output = tf.matmul(h, w_hq) + b_q
+        return output, state
+
+    def rnn_cell(self, inputs, state, w_xr, w_hr, b_r, w_xz, w_hz, b_z, w_xh, w_hh, b_h):
+        # inputs shape (time_steps, batch_size，vocab_size)
         h, = state
-        outputs = []
         # x shape (batch_size，vocab_size)
+        h_list = []
         for x in inputs:
-            x = tf.reshape(x, [-1, w_xh.shape[0]])
-            h = tf.tanh(tf.matmul(x, w_xh) + tf.matmul(h, w_hh) + b_h)
-            y = tf.matmul(h, w_hq) + b_q
-            outputs.append(y)
-        return tf.concat(outputs, axis=0), (h,)
+            x = tf.reshape(x, (-1, w_xh.shape[0]))
+            r = tf.sigmoid(tf.matmul(x, w_xr) + tf.matmul(h, w_hr) + b_r)
+            z = tf.sigmoid(tf.matmul(x, w_xz) + tf.matmul(h, w_hz) + b_z)
+            h_tilda = tf.tanh(tf.matmul(x, w_xh) + tf.matmul(r * h, w_hh) + b_h)
+            h = z * h + (1 - z) * h_tilda
+            h_list.append(h)
+        return tf.concat(h_list, axis=0), (h,)
 
 
 def predict(prefix, num_preds, model, vocab):
@@ -114,7 +127,12 @@ def train_epoch(train_iter, model, loss, optimizer, use_random_iter=False):
 def main():
     # Load text data and vocab.
     batch_size, num_steps = 32, 35
-    data_iter = SeqDataLoader(batch_size=batch_size, num_steps=num_steps, use_random_iter=False, max_tokens=10000)
+    data_iter = SeqDataLoader(
+        batch_size=batch_size,
+        num_steps=num_steps,
+        use_random_iter=False,
+        max_tokens=10000
+    )
     corpus, vocab = data_iter.corpus, data_iter.vocab
 
     # Create model.

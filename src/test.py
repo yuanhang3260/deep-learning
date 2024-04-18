@@ -12,6 +12,14 @@ def main():
     print(da)
     print(db)
 
+    foo('hello', 1, 2, 3, a=4, b=5)
+
+
+def foo(input1, input2, *args, **kwargs):
+    print(input)
+    a, b = args
+    print()
+
 
 if __name__ == "__main__":
     main()

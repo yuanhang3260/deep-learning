@@ -1,5 +1,3 @@
-import math
-
 import tensorflow as tf
 
 import base
@@ -10,26 +8,39 @@ from rnn import rnn_base
 class RnnModelSimple(tf.keras.layers.Layer):
     def __init__(self, num_hiddens, vocab_size, **kwargs):
         super(RnnModelSimple, self).__init__(**kwargs)
-        rnn_cell = tf.keras.layers.SimpleRNNCell(num_hiddens, kernel_initializer='glorot_uniform')
-        self.rnn = tf.keras.layers.RNN(rnn_cell, time_major=True, return_sequences=True, return_state=True)
+        rnn_cell = tf.keras.layers.SimpleRNNCell(
+            units=num_hiddens,
+            kernel_initializer='glorot_uniform'
+        )
+        self.rnn = tf.keras.layers.RNN(
+            cell=rnn_cell,
+            time_major=True,
+            return_sequences=True,
+            return_state=True
+        )
         self.vocab_size = vocab_size
         self.dense = tf.keras.layers.Dense(vocab_size)
 
     def call(self, inputs, *args, **kwargs):
-        state = args[0]
+        state, = args
         x = tf.one_hot(tf.transpose(inputs), self.vocab_size)
         y, *state = self.rnn(x, state)
         output = self.dense(tf.reshape(y, (-1, y.shape[-1])))
         return output, state
 
-    def begin_state(self, *args, **kwargs):
-        return self.rnn.cell.get_initial_state(*args, **kwargs)
+    def begin_state(self, batch_size, dtype=None):
+        return self.rnn.cell.get_initial_state(batch_size=batch_size, dtype=dtype)
 
 
 def main():
     # Load text data and vocab.
     batch_size, num_steps = 32, 35
-    data_iter = SeqDataLoader(batch_size=batch_size, num_steps=num_steps, use_random_iter=False, max_tokens=10000)
+    data_iter = SeqDataLoader(
+        batch_size=batch_size,
+        num_steps=num_steps,
+        use_random_iter=False,
+        max_tokens=10000
+    )
     corpus, vocab = data_iter.corpus, data_iter.vocab
 
     # Create model.
