@@ -34,7 +34,7 @@ class RnnModelSimple(tf.keras.layers.Layer):
 
 def main():
     # Load text data and vocab.
-    batch_size, num_steps = 32, 35
+    batch_size, num_steps = 32, 50
     data_iter = SeqDataLoader(
         batch_size=batch_size,
         num_steps=num_steps,

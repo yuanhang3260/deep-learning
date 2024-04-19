@@ -126,7 +126,7 @@ def train_epoch(train_iter, model, loss, optimizer, use_random_iter=False):
 
 def main():
     # Load text data and vocab.
-    batch_size, num_steps = 32, 35
+    batch_size, num_steps = 32, 50
     data_iter = SeqDataLoader(
         batch_size=batch_size,
         num_steps=num_steps,
