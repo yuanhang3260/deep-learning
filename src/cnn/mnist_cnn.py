@@ -4,6 +4,7 @@ import numpy as np
 import tensorflow.keras as keras
 from tensorflow.keras import layers
 
+from metrics import Metrics
 import datasets as ds
 
 from mnist import mnist_base, mnist_images
@@ -41,19 +42,16 @@ def main():
     #optimizer = tf.keras.optimizers.Adam()
 
     # Start training.
-    epochs, losses, train_accs, test_accs = [], [], [], []
-    for epoch in range(15):
+    metrics = Metrics(x_label='epoch', y_label_list=['loss', 'train acc', 'test acc'])
+    for epoch in range(5):
         loss_mean, train_acc = mnist_base.train_epoch(train_dataset, model, loss, optimizer)
         test_acc = mnist_base.accuracy(model(test_images), test_labels)
         print("epoch %d, train loss %f, train acc %f, test acc %f" %
               (epoch, loss_mean, train_acc, test_acc))
 
-        epochs.append(epoch)
-        losses.append(loss_mean)
-        train_accs.append(train_acc)
-        test_accs.append(test_acc)
+        metrics.add(epoch, y_value_list=[loss_mean, train_acc, test_acc])
 
-    mnist_base.plot_metric(epochs, losses, train_accs, test_accs)
+    metrics.plot()
 
 
 def main2():

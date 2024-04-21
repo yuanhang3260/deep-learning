@@ -3,6 +3,7 @@ import math
 import tensorflow as tf
 
 import base
+from metrics import Metrics
 from rnn.text import SeqDataLoader
 
 class RnnModelScratch:
@@ -155,22 +156,18 @@ def main():
 
     # Training
     print('# Start training ...')
-    epochs, losses = [], []
-    num_epochs = 100
-    for epoch in range(num_epochs):
+    metrics = Metrics(x_label='epoch', y_label_list=['train_loss'])
+    for epoch in range(100):
         loss_mean = train_epoch(data_iter, model, loss, optimizer)
         #test_ppl = mnist_base.accuracy(model(test_images), test_labels)
-        print(f"epoch {epoch}, train loss {loss_mean}")
-
-        epochs.append(epoch)
-        losses.append(loss_mean)
+        print(f"epoch {epoch}, train_loss {loss_mean}")
+        metrics.add(epoch, y_value_list=[loss_mean])
 
     print('# Training finished.')
-
     print(predict(prefix='time traveller', num_preds=50, model=model, vocab=vocab))
     print(predict(prefix='traveller', num_preds=50, model=model, vocab=vocab))
 
-    base.plot_metrics(epochs, metrics=[losses], legends=['train loss'])
+    metrics.plot()
 
 
 if __name__ == "__main__":
