@@ -43,5 +43,8 @@ setup jupyter server
 
 ```
 https://developer.aliyun.com/article/1436710
+
+nohup jupyter notebook --allow-root > jupyter.log 2>&1 &
+nohup jupyter lab --allow-root > jupyter.log 2>&1 &
 ```
 
