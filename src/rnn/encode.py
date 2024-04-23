@@ -16,7 +16,7 @@ class Decoder(tf.keras.layers.Layer):
     def init_state(self, enc_outputs, *args):
         raise NotImplementedError
 
-    def call(self, x, *args, **kwargs):
+    def call(self, x, state, *args, **kwargs):
         raise NotImplementedError
 
 
@@ -26,7 +26,7 @@ class EncoderDecoder(tf.keras.Model):
         self.encoder = encoder
         self.decoder = decoder
 
-    def call(self, enc_x, dec_x, *args, **kwargs):
-        enc_outputs = self.encoder(enc_x, *args, **kwargs)
+    def call(self, enc_input, dec_input, *args, **kwargs):
+        enc_outputs = self.encoder(enc_input, *args, **kwargs)
         dec_state = self.decoder.init_state(enc_outputs, *args)
-        return self.decoder(dec_x, dec_state, **kwargs)
+        return self.decoder(dec_input, dec_state, **kwargs)

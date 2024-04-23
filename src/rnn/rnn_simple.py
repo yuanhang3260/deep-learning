@@ -14,7 +14,7 @@ class RnnModelSimple(tf.keras.layers.Layer):
         )
         self.rnn = tf.keras.layers.RNN(
             cell=rnn_cell,
-            time_major=True,
+            time_major=True,  # Input should be transposed to (timestamp, batch, ...)
             return_sequences=True,
             return_state=True
         )

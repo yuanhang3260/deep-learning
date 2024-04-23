@@ -4,11 +4,18 @@ import tensorflow as tf
 import text
 import datasets as ds
 
+lang_file = {
+    'chz': 'txt/chz_eng.txt',
+    'fra': 'txt/fra_eng_min.txt'
+}
 
-def read_file(filename):
+lang = 'fra'
+
+def read_file(filename, num_examples=1):
     with open(filename, 'r') as f:
         lines = f.readlines()
-    return lines
+    #return lines[::(len(lines) // num_examples)]
+    return lines[:num_examples]
 
 
 def tokenize_nmt(lines):
@@ -31,7 +38,10 @@ def tokenize_nmt(lines):
 
     for i in range(len(source)):
         source[i] = process_seq(source[i]).split(' ')
-        target[i] = list(process_seq(target[i]))  # split chinese characters
+        if lang == 'chz':
+            target[i] = list(process_seq(target[i]))  # split chinese characters
+        else:
+            target[i] = process_seq(target[i]).split(' ')
 
     return source, target
 
@@ -63,7 +73,7 @@ def build_array_nmt(lines, vocab, num_steps):
 
 
 def load_data_nmt(batch_size, num_steps, num_examples=600):
-    source, target = tokenize_nmt(read_file('txt/cmn_eng.txt'))
+    source, target = tokenize_nmt(read_file(lang_file[lang], num_examples))
     # plot_token_hist(x_label='seq tokens num', y_label_list=['source', 'target'],
     #                y_data_list=[[len(seq) for seq in source], [len(seq) for seq in target]])
 
@@ -78,7 +88,13 @@ def load_data_nmt(batch_size, num_steps, num_examples=600):
 
 
 def main():
-    train_iter, src_vocab, tgt_vocab = load_data_nmt(batch_size=2, num_steps=8)
+    train_iter, src_vocab, tgt_vocab = load_data_nmt(batch_size=2, num_steps=8, num_examples=100)
+    for x, x_valid_len, y, y_valid_len in train_iter:
+        print('x:', tf.cast(x, tf.int32))
+        print('x的有效长度:', x_valid_len)
+        print('y:', tf.cast(y, tf.int32))
+        print('y的有效长度:', y_valid_len)
+        break
 
 
 if __name__ == "__main__":
