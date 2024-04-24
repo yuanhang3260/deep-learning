@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import tensorflow as tf
 
-import text
+import rnn.text
 import datasets as ds
 
 lang_file = {
@@ -77,8 +77,8 @@ def load_data_nmt(batch_size, num_steps, num_examples=600):
     # plot_token_hist(x_label='seq tokens num', y_label_list=['source', 'target'],
     #                y_data_list=[[len(seq) for seq in source], [len(seq) for seq in target]])
 
-    src_vocab = text.Vocab(source, min_freq=2, reserved_tokens=['<pad>', '<bos>', '<eos>'])
-    tgt_vocab = text.Vocab(target, min_freq=2, reserved_tokens=['<pad>', '<bos>', '<eos>'])
+    src_vocab = rnn.text.Vocab(source, min_freq=2, reserved_tokens=['<pad>', '<bos>', '<eos>'])
+    tgt_vocab = rnn.text.Vocab(target, min_freq=2, reserved_tokens=['<pad>', '<bos>', '<eos>'])
 
     src_array, src_valid_len = build_array_nmt(source, src_vocab, num_steps)
     tgt_array, tgt_valid_len = build_array_nmt(target, tgt_vocab, num_steps)
