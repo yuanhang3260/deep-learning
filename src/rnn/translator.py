@@ -92,6 +92,7 @@ def train_epoch(train_iter, model, optimizer, tgt_vocab):
 
         # metrics
         num_tokens = tf.reduce_sum(y_valid_len).numpy()
+        #print(f'a: {tf.reduce_sum(train_loss)}, b: {num_tokens}')
         metric.add(tf.reduce_sum(train_loss), num_tokens, 1)
 
     return metric[0] / metric[1]
@@ -140,7 +141,7 @@ def main():
 
     # Create optimizer.
     # optimizer = tf.keras.optimizers.SGD(1.0)
-    optimizer = tf.keras.optimizers.Adam()
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.005)
 
     # Training
     print('# Start training ...')

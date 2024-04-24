@@ -20,7 +20,7 @@ https://help.aliyun.com/zh/egs/user-guide/use-cloud-assistant-to-automatically-i
 https://docs.anaconda.com/free/miniconda/#quick-command-line-install
 ```
 
-## Jupyter
+## jupyter
 
 - install jupyter
 
