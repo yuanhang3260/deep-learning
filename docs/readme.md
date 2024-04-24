@@ -56,6 +56,7 @@ def set_device(device):
         import os
         os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
     elif device == 'gpu':
+        import tensorflow as tf
         gpus = tf.config.list_physical_devices('GPU')
         tf.config.experimental.set_memory_growth(gpus[0], True)
 
