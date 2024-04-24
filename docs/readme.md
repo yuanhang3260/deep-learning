@@ -23,10 +23,10 @@ https://docs.anaconda.com/free/miniconda/#quick-command-line-install
 install tensorflow-gpu
 
 ```bash
-conda install tensorflow-gpu
+conda install -c conda-forge tensorflow-gpu=2.10.0
 ```
 
-accelerate tensorflow gpu startup
+accelerate tensorflow gpu startup (optional)
 
 ```bash
 export CUDA_CACHE_MAXSIZE=4294967296
