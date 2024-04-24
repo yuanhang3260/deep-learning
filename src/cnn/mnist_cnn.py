@@ -95,14 +95,12 @@ def main2():
 
     model.summary()
 
-    batch_size = 128
+    batch_size = 256
     epochs = 10
 
-    model.compile(loss="categorical_crossentropy", optimizer="adam",
-                  metrics=["accuracy"])
+    model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=["accuracy"])
 
-    model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs,
-              validation_split=0.1)
+    model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, validation_split=0.1)
 
     score = model.evaluate(x_test, y_test, verbose=0)
     print("test loss:", score[0])
