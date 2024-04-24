@@ -10,17 +10,21 @@ import datasets as ds
 from mnist import mnist_base, mnist_images
 
 
+def preprocess_data(x, y):
+    return tf.expand_dims(tf.cast(x / 255.0, dtype='float32'), -1), tf.cast(y, dtype='int32')
+
+
 def main():
     # Prepare dataset.
     mnist_train, mnist_test = mnist_images.load_images()
-    train_images, train_labels = mnist_base.preprocess_data(*mnist_train)
-    test_images, test_labels = mnist_base.preprocess_data(*mnist_test)
+    train_images, train_labels = preprocess_data(*mnist_train)
+    test_images, test_labels = preprocess_data(*mnist_test)
     train_dataset = ds.load_dataset((train_images, train_labels),
                                     batch_size=256,
                                     is_train=True)
 
     # Define model.
-    input_shape = train_images.shape[1:] + (1,)
+    input_shape = train_images.shape[1:]
     model = tf.keras.models.Sequential()
     model.add(keras.Input(shape=input_shape))
     model.add(tf.keras.layers.Conv2D(filters=6, kernel_size=3, activation='relu', padding='same'))
