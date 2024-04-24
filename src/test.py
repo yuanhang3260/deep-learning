@@ -12,7 +12,7 @@ def main():
     print(da)
     print(db)
 
-    foo('hello', 1, 2, 3, a=4, b=5)
+    foo('hello', 1, 2, a=4, b=5)
 
 
 def foo(input1, input2, *args, **kwargs):
