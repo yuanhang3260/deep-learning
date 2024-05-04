@@ -62,8 +62,8 @@ class MaskedSoftmaxCELoss(tf.keras.losses.Loss):
             return tf.where(mask, x, value)
 
     # valid_len: (batch_size,)
-    # label: (batch_size,num_steps)
-    # pred: (batch_size,num_steps,vocab_size)
+    # label: (batch_size, num_steps)
+    # pred: (batch_size, num_steps, vocab_size)
     def call(self, label, pred):
         mask = tf.ones_like(label, dtype=tf.float32)
         mask = self.sequence_mask(mask, self.valid_len)
