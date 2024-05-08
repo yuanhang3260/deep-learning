@@ -1,5 +1,5 @@
 import tensorflow as tf
-
+import numpy as np
 
 def sequence_mask(x, valid_len, value=0.):
     # x.shape[0] == valid_len.shape[0]
@@ -34,10 +34,10 @@ class DotProductAttention(tf.keras.layers.Layer):
         self.dropout = tf.keras.layers.Dropout(dropout)
         self.attention_weights = None
 
-    # queries的形状：(batch_size，查询的个数，d)
-    # keys的形状：(batch_size，“键－值”对的个数，d)
-    # values的形状：(batch_size，“键－值”对的个数，值的维度)
-    # valid_lens的形状:(batch_size，)或者(batch_size，查询的个数)
+    # queries形状：(batch_size，Q的个数，d)
+    # keys形状：(batch_size，K-V的个数，d)
+    # values形状：(batch_size，K-V的个数，值的维度)
+    # valid_lens形状:(batch_size，)或者(batch_size，Q的个数)
     def call(self, queries, keys, values, valid_lens, **kwargs):
         d = queries.shape[-1]
         scores = (tf.matmul(queries, keys, transpose_b=True) /
@@ -58,13 +58,13 @@ class MultiHeadAttention(tf.keras.layers.Layer):
         self.W_o = tf.keras.layers.Dense(num_hiddens, use_bias=bias)
 
     def call(self, queries, keys, values, valid_lens, **kwargs):
-        # queries，keys，values 形状:
-        #   (batch_size，Q/KV的个数，num_hiddens)
+        # Q/K-V 形状:
+        #   (batch_size，Q/K-V的个数，num_hiddens)
         # valid_lens 形状:
         #   (batch_size，)或(batch_size，Q个数)
         #
-        # 经过变换后，输出的 queries，keys，values 形状:
-        #   (batch_size * num_heads，Q/KV的个数，num_hiddens / num_heads)
+        # 经过变换后，输出的 Q/K-V 形状:
+        #   (batch_size * num_heads，Q/K-V的个数，num_hiddens / num_heads)
         queries = transpose_qkv(self.W_q(queries), self.num_heads)
         keys = transpose_qkv(self.W_k(keys), self.num_heads)
         values = transpose_qkv(self.W_v(values), self.num_heads)
@@ -83,18 +83,18 @@ class MultiHeadAttention(tf.keras.layers.Layer):
 
 
 def transpose_qkv(x, num_heads):
-    # 输入X的形状:
-    #   (batch_size，查询或者“键－值”对的个数，num_hiddens)
-    # 输出X的形状:
-    #   (batch_size，查询或者“键－值”对的个数，num_heads，num_hiddens / num_heads)
+    # 输入X形状:
+    #   (batch_size，Q/K-V的个数，num_hiddens)
+    # 输出X形状:
+    #   (batch_size，Q/K-V的个数，num_heads，num_hiddens / num_heads)
     x = tf.reshape(x, shape=(x.shape[0], x.shape[1], num_heads, -1))
 
-    # 输出X的形状:
-    #   (batch_size，num_heads，查询或者“键－值”对的个数, num_hiddens / num_heads)
+    # 输出X形状:
+    #   (batch_size，num_heads，Q/K-V的个数, num_hiddens / num_heads)
     x = tf.transpose(x, perm=(0, 2, 1, 3))
 
-    # 最终输出的形状:
-    #   (batch_size * num_heads, 查询或者“键－值”对的个数, num_hiddens/num_heads)
+    # 最终输出形状:
+    #   (batch_size * num_heads, Q/K-V的个数, num_hiddens/num_heads)
     return tf.reshape(x, shape=(-1, x.shape[2], x.shape[3]))
 
 
@@ -104,10 +104,26 @@ def transpose_output(x, num_heads):
     return tf.reshape(x, shape=(x.shape[0], x.shape[1], -1))
 
 
+class PositionalEncoding(tf.keras.layers.Layer):
+    def __init__(self, num_hiddens, dropout, max_len=1000):
+        super().__init__()
+        self.dropout = tf.keras.layers.Dropout(dropout)
+        # 创建一个足够长的p
+        self.p = np.zeros(shape=(1, max_len, num_hiddens))
+        x = (np.arange(max_len, dtype=np.float32).reshape(-1, 1)
+             / np.power(10000, np.arange(0, num_hiddens, 2, dtype=np.float32) / num_hiddens))
+        self.p[:, :, 0::2] = np.sin(x)
+        self.p[:, :, 1::2] = np.cos(x)
+
+    def call(self, x, **kwargs):
+        x = x + self.p[:, :x.shape[1], :]
+        return self.dropout(x, **kwargs)
+
+
 def main():
     print('---------------------------------------------------------------------')
-    #ms = masked_softmax(tf.random.uniform(shape=(3, 2, 5)), tf.constant([2, 4, 3]))
-    ms = masked_softmax(tf.random.uniform(shape=(3, 2, 5)), tf.constant([[2, 4], [3, 1], [3, 5]]))
+    #ms = masked_softmax(tf.random.uniform(shape=(3, 2, 5)), tf.constant([[2, 4], [3, 1], [3, 5]]))
+    ms = masked_softmax(tf.random.uniform(shape=(3, 2, 5)), tf.constant([2, 4, 3]))
     print(ms)
 
     print('---------------------------------------------------------------------')

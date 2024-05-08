@@ -154,8 +154,8 @@ def main():
     print('# Training finished.')
 
     engs = ['go .', "i lost .", 'he\'s calm .', 'i\'m home .']
-    chns = ['va !', 'j\'ai perdu .', 'il est calme .', 'je suis chez moi .']
-    for eng, chn in zip(engs, chns):
+    tgts = ['va !', 'j\'ai perdu .', 'il est calme .', 'je suis chez moi .']
+    for eng, chn in zip(engs, tgts):
         translation, attention_weight_seq = predict(model, eng, src_vocab, tgt_vocab, num_steps)
         print(f'{eng} => {translation}')
 
