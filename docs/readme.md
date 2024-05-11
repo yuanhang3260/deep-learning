@@ -38,6 +38,14 @@ nohup jupyter notebook --allow-root > jupyter.log 2>&1 &
 nohup jupyter lab --allow-root > jupyter.log 2>&1 &
 ```
 
+- juputer lab web
+
+```bash
+http://${ip}:8888/lab/
+```
+
+
+
 ## tensorflow
 
 - install tensorflow-gpu
