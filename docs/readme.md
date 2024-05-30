@@ -9,8 +9,38 @@ https://ecs.console.aliyun.com/server/region/cn-hangzhou
 - install nvidia driver
 
 ```
+https://help.aliyun.com/zh/egs/user-guide/install-a-gpu-driver-on-a-gpu-accelerated-compute-optimized-linux-instance?spm=a2c4g.11186623.0.0.414e2ef7BDrp42
+
+# for shared-gpu ecs
 https://help.aliyun.com/zh/egs/user-guide/use-cloud-assistant-to-automatically-install-and-upgrade-grid-drivers
 ```
+
+- mount new disk
+
+```
+https://help.aliyun.com/zh/ecs/user-guide/attach-a-data-disk#d903bdbaaez3q
+```
+
+```bash
+# mount
+sudo mount /dev/vdb1 ~/data1
+# change owner
+sudo chown -R ecs-user:ecs-user ~/data1
+```
+
+- g++ 8
+
+```bash
+scl enable devtoolset-8 -- bash
+```
+
+- upgrade glibc
+
+```
+https://github.com/apernet/tcp-brutal/issues/7
+```
+
+
 
 ## conda
 

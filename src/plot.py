@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import tensorflow as tf
-import tensorflow.keras as keras
+import keras as keras
 
 
 def plot_3d_surface(x, y, z):
