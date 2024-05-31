@@ -40,6 +40,16 @@ scl enable devtoolset-8 -- bash
 https://github.com/apernet/tcp-brutal/issues/7
 ```
 
+- bashrc
+
+```bash
+export JAVA_HOME="/usr/share/jdk"
+export CUDA_HOME="/usr/local/cuda"
+export PATH="$JAVA_HOME/bin:$CUDA_HOME/bin:$HOME/data1/miniconda3/bin:$PATH"
+
+export LD_LIBRARY_PATH="$CUDA_HOME/lib64:$LD_LIBRARY_PATH"
+```
+
 
 
 ## conda
@@ -56,7 +66,7 @@ https://docs.anaconda.com/free/miniconda/#quick-command-line-install
 
 ```bash
 conda install jupyter
-conda install -c conda-forge jupyterlab
+#conda install -c conda-forge jupyterlab
 ```
 
 - setup jupyter server
@@ -83,7 +93,7 @@ http://${ip}:8888/lab/
 ```bash
 CONDA_OVERRIDE_CUDA="11.2" (on cpu-only machine)
 
-conda install -c conda-forge tensorflow-gpu=2.10.0
+conda install -c conda-forge tensorflow-gpu=2.16.0
 ```
 
 - accelerate tensorflow gpu startup (optional)
